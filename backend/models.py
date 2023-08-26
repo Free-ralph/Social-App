@@ -7,7 +7,7 @@ from django.dispatch import receiver
 class Post(models.Model):
     profile = models.ForeignKey('Profile', related_name = 'posts', on_delete = models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add = True)
-    message = models.TextField()
+    message = models.TextField(null = True)
     image = models.ImageField(upload_to = 'feeds', null = True)
 
     class Meta:
@@ -34,7 +34,7 @@ class Profile(models.Model):
     author = models.OneToOneField(User, on_delete = models.CASCADE, related_name='profile')
     following = models.ManyToManyField('self', related_name = 'followers', symmetrical=False, blank = True)
     profile_image = models.ImageField(upload_to = 'profile', default = 'profile/default.jpg', null = True, blank = True)
-    cover_image = models.ImageField(upload_to = 'profile_cover', null = True, blank = True)
+    cover_image = models.ImageField(upload_to = 'profile_cover', default = 'profile/default.jpg',  null = True, blank = True)
 
     # def followers(self):
     #     return self.followers
@@ -55,7 +55,7 @@ class Comment(models.Model):
     post = models.ForeignKey('Post', on_delete = models.CASCADE, related_name = 'comments', null = True )
     profile = models.ForeignKey('Profile', on_delete = models.CASCADE, related_name = 'comments', null = True)
     message = models.TextField()
-    replies = models.ManyToManyField('self', symmetrical = False)
+    replies = models.ManyToManyField('self', symmetrical = False, blank=True)
     created_at = models.DateTimeField(auto_now_add = True)
 
     def __str__(self):

@@ -3,13 +3,14 @@ from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
 from backend.models import Comment, Post, Profile, Like
 from .serializers import ( 
-    CommentCreateSerializer, CommentSerializer, ProfileInfoSerializer, RegisterSerializer, UserSerializer, 
-    MyTokenObtainPairSerializer, PostSerializer, 
-    ProfileSerializer, ProfileUpdateSerializer )
+    CommentCreateSerializer, CommentSerializer, PostProfileInfoSerializer, RegisterSerializer, UserSerializer
+    , PostGetSerializer, 
+    ProfileSerializer, ProfileUpdateSerializer, 
+    PostSerializer )
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 
 
 class FeedApiView(GenericAPIView):
@@ -23,8 +24,8 @@ class FeedApiView(GenericAPIView):
         profile_serializer = ProfileSerializer(profile, context = context)
         posts = Post.objects.filter( profile__in = profile.following.all()).prefetch_related('likes')
         suggestions = Profile.objects.exclude( id__in = profile.following.all())
-        post_serializer = PostSerializer(posts, many = True, context = context)
-        suggestions_serializer = ProfileInfoSerializer(suggestions, many = True, context = context)
+        post_serializer = PostGetSerializer(posts, many = True, context = context)
+        suggestions_serializer = PostProfileInfoSerializer(suggestions, many = True, context = context)
         
         data = {
             'profile' : profile_serializer.data,
@@ -50,8 +51,8 @@ class RegisterApiView(GenericAPIView):
         return Response(serializedData.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ObtainTokenPairApiView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+# class ObtainTokenPairApiView(TokenObtainPairView):
+#     serializer_class = MyTokenObtainPairSerializer
 
 class ProfileApiView(GenericAPIView):
     serializer_class = ProfileSerializer
@@ -71,8 +72,21 @@ class ProfileApiView(GenericAPIView):
     def post(self, *args, **kwargs):
         pass
 
+class UserProfileApiView(GenericAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, *args, **kwargs):
+        profile_qs = Profile.objects.filter(author = self.request.user)
+        if not profile_qs.exists():
+            return Response({"message" : "Profile has been deactivated or deleted"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.get_serializer(profile_qs[0], context = { 'request' : self.request})
+        return Response(serializer.data)
+
+
 class PostApiView(GenericAPIView):
-    serializer_class = PostSerializer
+    serializer_class = PostGetSerializer
     permission_classes = [IsAuthenticated,]
     parser_classes = [MultiPartParser, FormParser]
 
@@ -87,22 +101,20 @@ class PostApiView(GenericAPIView):
         return Response(serializer.data)
     
     def post(self, *args, **kwargs):
-        profile_qs = Profile .objects.filter(author__id = self.request.user.id)
+        profile_qs = Profile.objects.filter(author__id = self.request.user.id)
         if not profile_qs.exists():
             return Response({'message' : 'Profile has been deactivated or deleted'}, status = status.HTTP_404_NOT_FOUND)
         
         profile = profile_qs[0]
-        image = self.request.data.get('image')
-        serializer = self.get_serializer(data = self.request.data)
+        serializer = PostSerializer(data = self.request.data)
         if serializer.is_valid():
             post = serializer.save()
             post.profile = profile
-            if image:
-                post.image = image
             post.save()
             return Response({'message' : 'posted succesfully'})
         
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
 
 
 class FollowApiView(GenericAPIView):
@@ -110,7 +122,6 @@ class FollowApiView(GenericAPIView):
     def get(self, *args, **kwargs):
         profile_id = kwargs['profile_id']
         action = kwargs['action']
-        print(action)
         profile_qs = Profile.objects.filter(author__id = self.request.user.id)
         if not profile_qs.exists():
             return Response({'message' : 'Profile has been deactivated or deleted'}, status = status.HTTP_404_NOT_FOUND)
@@ -199,6 +210,16 @@ class CommentApiView(GenericAPIView):
 
         return Response(serializer.data)
 
+class CommentLikeCount(GenericAPIView):
+    permission_classes  = [IsAuthenticated, ]
+
+    def get(self, *args, **kwargs):
+        Id = kwargs.get('id')
+        comment_qs = Comment.objects.filter(id = Id)
+        if comment_qs.exists():
+            like_count = comment_qs[0].likes.all().count()
+            return Response({'count' : like_count})
+        return Response({'count' : 0})
 
 class AddCommentApiView(GenericAPIView):
     serializer_class = CommentCreateSerializer

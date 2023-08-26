@@ -2,16 +2,16 @@ from rest_framework import serializers
 from chat.models import Message, Room
 from backend.models import Profile
 
-class ProfileSerializer(serializers.ModelSerializer):
+class ProfileRoomSerializer(serializers.ModelSerializer):
     class Meta :
         model = Profile
         fields = ['name', 'id']
 
 class RoomSerializer(serializers.ModelSerializer):
-    members = ProfileSerializer(read_only = True, many = True)
+    members = ProfileRoomSerializer(read_only = True, many = True)
     unread_message_count = serializers.SerializerMethodField()
     last_message = serializers.SerializerMethodField()
-    name = serializers.SerializerMethodField()
+    member_name = serializers.SerializerMethodField()
     profileID = serializers.SerializerMethodField() 
     profile_image = serializers.SerializerMethodField() 
     
@@ -23,7 +23,7 @@ class RoomSerializer(serializers.ModelSerializer):
             'members', 
             'unread_message_count', 
             'last_message', 
-            'name', 
+            'member_name', 
             'profileID',
             'profile_image'
         ]
@@ -37,7 +37,7 @@ class RoomSerializer(serializers.ModelSerializer):
         if message:
             return message.content
     
-    def get_name(self, obj):
+    def get_member_name(self, obj):
         # since every room has two member, i'll exclude mine and return the name of the other
         profile = self.context['request'].user.profile
         other_profile_qs = obj.members.exclude(id = profile.id)
@@ -70,6 +70,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     profile_image = serializers.SerializerMethodField()
     cover_image = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField()
+    followingCount = serializers.SerializerMethodField()
+    followersCount = serializers.SerializerMethodField()
     class Meta:
         model = Profile
         fields = [
@@ -77,12 +79,18 @@ class ProfileSerializer(serializers.ModelSerializer):
                 'name',
                 'bio',
                 'created_at',
-                'following',
-                'followers',
+                'followingCount',
+                'followersCount',
                 'profile_image', 
                 'cover_image',
                 'username'
                 ]
+    
+    def get_followersCount(self, obj):
+        return obj.followers.all().count()
+    
+    def get_followingCount(self, obj):
+        return obj.following.all().count()
         
     def get_profile_image(self, obj):
         request = self.context.get('request')

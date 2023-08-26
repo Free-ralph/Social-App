@@ -27,13 +27,21 @@ class ProfileDetialApiView(GenericAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated, ]
 
-    def post(self, *args, **kwargs):
-        ID = kwargs['id']
+    def get(self, *args, **kwargs):
+        profile_qs = Profile.objects.filter(author = self.request.user)
+        if not profile_qs.exists():
+            return Response({ 'message ' : 'profile does not exist'}, status = status.HTTP_404_NOT_FOUND)
+        
+        profile = profile_qs[0]
+        return Response(self.get_serializer(profile).data)
+    
+class ProfileDetialByIDApiView(GenericAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated, ]
 
-        if self.request.data['type'] == 'userID':
-            profile_qs = Profile.objects.filter(author__id = ID)
-        else:
-            profile_qs = Profile.objects.filter(id = ID)
+    def get(self, *args, **kwargs):
+        ID = kwargs['id']
+        profile_qs = Profile.objects.filter(id = ID)
 
         if not profile_qs.exists():
             return Response({ 'message ' : 'profile does not exist'}, status = status.HTTP_404_NOT_FOUND)

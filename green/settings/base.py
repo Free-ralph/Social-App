@@ -150,13 +150,19 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
+INTERNAL_IPS = ['127.0.0.1']
+
+VITE_APP_DIR = BASE_DIR / "frontend"
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static_files'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media_root'
-STATICFILES_DIRS = [ BASE_DIR / 'frontend/build/static' , ]
+STATICFILES_DIRS = [
+    VITE_APP_DIR / "dist",
+    BASE_DIR / "static",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

@@ -1,7 +1,3 @@
-from dataclasses import field, fields
-from multiprocessing import context
-import profile
-from pyexpat import model
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
@@ -50,16 +46,18 @@ class UserSerializer(serializers.ModelSerializer):
             'email'
         ]
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
+# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+#     @classmethod
+#     def get_token(cls, user):
+#         token = super().get_token(user)
 
-        # Add custom claims
-        token['username'] = user.username
-        token['id'] = user.id
+#         # Add custom claims
+#         token['username'] = user.username
+#         token['profile_name'] = user.profile.name
+#         token['profile_image'] = user.profile.profile_image
+#         token['id'] = user.id
 
-        return token
+#         return token
 
 
     
@@ -86,7 +84,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             }
 
 
-class ProfileInfoSerializer(serializers.ModelSerializer):
+class PostProfileInfoSerializer(serializers.ModelSerializer):
     profile_image = serializers.SerializerMethodField()
     class Meta:
         model = Profile
@@ -152,7 +150,20 @@ class CommentSerializer(serializers.ModelSerializer):
         return obj.likes.count()
 
 class PostSerializer(serializers.ModelSerializer):
-    profile = ProfileInfoSerializer( read_only = True)
+
+    class Meta:
+        model = Post
+        fields = [
+            'image', 
+            'message'
+        ]
+
+    def create(self, validated_data):
+        post = Post(**validated_data)
+        return post
+
+class PostGetSerializer(serializers.ModelSerializer):
+    profile = PostProfileInfoSerializer( read_only = True)
     image = serializers.SerializerMethodField()
     likes = serializers.SerializerMethodField()
     isLiked = serializers.SerializerMethodField()
@@ -198,12 +209,25 @@ class PostSerializer(serializers.ModelSerializer):
     
     def get_commentCount(self, obj):
         return obj.comments.count()
+        
+class ProfileFollowSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only = True)
+    class Meta:
+        model = Profile
+        fields = [
+            'name',
+            'profile_image',
+            'id',
+            'author'
+        ]
 
 class ProfileSerializer(serializers.ModelSerializer):
-    posts = PostSerializer(many = True, read_only = True)
+    posts = PostGetSerializer(many = True, read_only = True)
     author = UserSerializer(read_only = True)
     profile_image = serializers.SerializerMethodField()
     cover_image = serializers.SerializerMethodField()
+    following = ProfileFollowSerializer(many = True, read_only = True)
+    followers = ProfileFollowSerializer(many = True, read_only = True)
     class Meta:
         model = Profile 
         depth = 2
