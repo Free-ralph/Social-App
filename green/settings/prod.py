@@ -3,7 +3,7 @@ from decouple import config
 import dj_database_url
 
 
-ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 
 LOGGING = {
