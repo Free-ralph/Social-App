@@ -12,7 +12,7 @@ migrations
 .DS_Store
 .env
 */settings/local.py
-/static_files/*
+
 /mediafiles/*
 __pycache__/
 /.vscode/
