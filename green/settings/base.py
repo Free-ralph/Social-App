@@ -1,10 +1,10 @@
 
 from pathlib import Path
 from datetime import timedelta
-
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-SECRET_KEY = 'django-insecure-ft=!m0$^^q78^zi71pxu1k=!h#*w@k0(3s4u*99z=#n4)a!m)m'
+SECRET_KEY = config("DJANGO_SECRET_KEY")
 
 DEBUG = True
 
@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     "channels",
     "corsheaders",
+    'storages',
 
 
     
@@ -74,6 +75,7 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
@@ -148,8 +150,14 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = 'green-social'
+
+AWS_DEFAULT_ACL = None
+
+
+
 INTERNAL_IPS = ['127.0.0.1']
 
 VITE_APP_DIR = BASE_DIR / "frontend"
@@ -161,7 +169,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media_root'
 STATICFILES_DIRS = [
     VITE_APP_DIR / "dist",
-    BASE_DIR / "static",
+    # BASE_DIR / "static",
 ]
 
 # Default primary key field type
@@ -180,3 +188,5 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

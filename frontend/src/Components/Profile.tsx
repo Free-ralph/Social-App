@@ -102,29 +102,30 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
       },
     });
 
-  const { mutate: updateProfileBio } = useMutation({
-    mutationFn: () =>
-      axiosPrivate.post(
-        `profile/update/${profile?.id}`,
-        {
-          name: updateInput.name,
-          bio: updateInput.bio,
-          state: updateInput.state,
-          city: updateInput.city,
-        },
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      ),
-    onSuccess: () => {
-      handleSnackMessage("updated succesfully", "success");
-      setOpenModal(false);
-      queryClient.invalidateQueries("profile");
-    },
-    onError: () => {
-      handleSnackMessage("Bio update failed", "error");
-    },
-  });
+  const { mutate: updateProfileBio, isLoading: isProfileUpdating } =
+    useMutation({
+      mutationFn: () =>
+        axiosPrivate.post(
+          `profile/update/${profile?.id}`,
+          {
+            name: updateInput.name,
+            bio: updateInput.bio,
+            state: updateInput.state,
+            city: updateInput.city,
+          },
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        ),
+      onSuccess: () => {
+        handleSnackMessage("updated succesfully", "success");
+        setOpenModal(false);
+        queryClient.invalidateQueries("profile");
+      },
+      onError: () => {
+        handleSnackMessage("Bio update failed", "error");
+      },
+    });
 
   const handleProfileImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -215,7 +216,13 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
             }
             className="w-full h-[3rem] mt-4 p-2 border-1 text-gray-200 bg-transparent rounded-lg focus:shadow-purple-500 focus:border-purple-500 focus:ring-purple-500"
           />
-          <Button text="update" style="py-2 px-4 mt-3" />
+          <button className="rounded-xl w-[5rem] h-[2.5rem] mt-3 bg-alternate text-gray-300 border-2 border-alternate hover:bg-transparent  text-sm  font-bold transition-all delay-[10] flex items-center justify-center">
+            {isProfileUpdating ? (
+              <Spinner width="30" height="30" />
+            ) : (
+              "update"
+            )}
+          </button>
         </form>
       </CustomModal>
 
@@ -313,25 +320,38 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
       <div className="w-[90%] m-auto mt-10">
         <div className="flex flex-col lg:flex-row w-full justify-between ">
           <div className="bg-secondary h-fit rounded-xl p-5 w-full lg:w-[24%] lg:sticky lg:top-4 text-gray-200">
-            <p className="font-bold text-gray-50 text-center">{profile.name}</p>
-            <p className="text-sm text-gray-400 text-center">
-              @{profile?.author.username}
-            </p>
-            <p className="mt-3 text-center">{profile?.bio}</p>
-            <p className="mt-2">
-              <LocationOnIcon /> {profile?.city}, {profile?.state}
-            </p>
-            <p className="mt-2">
-              <DomainVerificationIcon /> {formatDistanceToNow(new Date(profile.created_at), { addSuffix : true})}
-            </p>
-            <div
-              className="text-center w-full mt-3"
-              onClick={() => setOpenModal(true)}
-            >
-              {profileInfo && profileInfo.id === profile.id && (
-                <Button text="update" style="py-2 px-4" />
-              )}
-            </div>
+            {isProfileUpdating ? (
+              <div className="w-full flex justify-center mt-9">
+                <Spinner />
+              </div>
+            ) : (
+              <>
+                <p className="font-bold text-gray-50 text-center">
+                  {profile.name}
+                </p>
+                <p className="text-sm text-gray-400 text-center">
+                  @{profile?.author.username}
+                </p>
+                <p className="mt-3 text-center">{profile?.bio}</p>
+                <p className="mt-2">
+                  <LocationOnIcon /> {profile?.city}, {profile?.state}
+                </p>
+                <p className="mt-2">
+                  <DomainVerificationIcon />{" "}
+                  {formatDistanceToNow(new Date(profile.created_at), {
+                    addSuffix: true,
+                  })}
+                </p>
+                <div
+                  className="text-center w-full mt-3"
+                  onClick={() => setOpenModal(true)}
+                >
+                  {profileInfo && profileInfo.id === profile.id && (
+                    <Button text="update" style="py-2 px-4" />
+                  )}
+                </div>
+              </>
+            )}
           </div>
           <div className="w-full mb-4 flex items-center justify-around lg:hidden h-[4rem] bg-secondary mt-4 rounded-xl text-white">
             {navSectionItems.map((item, i) => (

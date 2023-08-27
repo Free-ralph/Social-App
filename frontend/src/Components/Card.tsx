@@ -42,6 +42,7 @@ const Card = ({
   const queryClient = useQueryClient();
   const { handleSnackMessage } = useStateContext();
   const [commentInput, setCommentInput] = useState("");
+  const [likeCount, setLikeCount] = useState(likes);
   const [liked, setLiked] = useState(isLiked);
   const [openComments, setOpenComments] = useState(false);
   const [replyMetaData, setReplyMetaData] = useState<replyMetaDataType>({
@@ -56,12 +57,12 @@ const Card = ({
   const { mutate: likePost } = useMutation({
     mutationFn: () =>
       axiosPrivate.get(`/favourite/${id}`).then((res) => res.data),
-    onSuccess: (res) => {
-      setLiked(res.status);
+    onSuccess: () => {
       queryClient.invalidateQueries("feed");
       queryClient.invalidateQueries("profile");
     },
     onError: () => {
+      queryClient.invalidateQueries("feed");
       handleSnackMessage("like operation failed unexpectedly", "error");
     },
   });
@@ -103,9 +104,19 @@ const Card = ({
   });
   const handleCloseModal = () => {
     setOpenComments(false);
-    queryClient.invalidateQueries("feed")
+    queryClient.invalidateQueries("feed");
   };
 
+  const ToggleLikes = () => {
+    // so basicallly for a faster response, i'm effecting the like and unlike actions locally before sending the info to the server
+    if (liked) {
+      setLikeCount((prev) => prev - 1);
+    } else {
+      setLikeCount((prev) => prev + 1);
+    }
+    setLiked(!liked);
+    likePost();
+  };
   const handleAddComment = () => {
     if (!commentInput) {
       handleSnackMessage("No comment to add", "error");
@@ -182,7 +193,7 @@ const Card = ({
         <div className="flex items-center">
           <div
             className="mr-1 text-primary cursor-pointer"
-            onClick={() => likePost()}
+            onClick={ToggleLikes}
           >
             <AnimatePresence mode="wait">
               {liked ? (
@@ -224,7 +235,7 @@ const Card = ({
               )}
             </AnimatePresence>
           </div>
-          <span className="text-gray-300 mr-4">{likes}</span>
+          <span className="text-gray-300 mr-4">{likeCount}</span>
           <span
             className="text-primary cursor-pointer mr-1"
             onClick={handleGetComments}

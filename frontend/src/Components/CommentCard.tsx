@@ -1,14 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ReplyCommentCard from "./ReplyCommentCard";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useStateContext } from "../context/StateContextProvider";
-import { useEffect } from "react";
 import { CommentType } from "../types/api";
 import { replyMetaDataType } from "./Card";
 import Spinner from "./Spinner";
-import { useMutation, useQuery } from "react-query";
+import { useMutation } from "react-query";
 
 type commentCardProps = {
   commentInputRef: React.RefObject<HTMLInputElement>;
@@ -32,14 +31,14 @@ const CommentCard = ({
   const axiosPrivate = useAxiosPrivate();
   const [showReplies, setShowReplies] = useState(false);
   const [liked, setLiked] = useState(isLiked);
+  const [likeCountLocal, setlikeCountLocal] = useState(likes)
 
   const {
     data: replies,
-    refetch: getReplies,
+    mutate: getReplies,
     isLoading: loadingReplies,
-  } = useQuery({
-    queryKey: [`reply${id}`],
-    queryFn: () =>
+  } = useMutation({
+    mutationFn: () =>
       axiosPrivate
         .get<CommentType[]>(`comments/comment/${id}`)
         .then((res) => res.data),
@@ -49,34 +48,49 @@ const CommentCard = ({
     // refetchInterval  i'm trying to discover if there's a way to trigger refetch if a state changes
   });
 
-  const { data: likeCount, refetch: refetchLikeCount } = useQuery({
-    queryKey: [`like${id}`],
-    queryFn: () =>
+  const { mutate : refetchLikeCount } = useMutation({
+    mutationFn : () =>
       axiosPrivate
         .get(`comment/like-count/${id}`)
         .then((res) => res.data.count),
-    cacheTime: 0,
+    onSuccess : (res) => {
+      setlikeCountLocal(res)
+    }
   });
 
   const { mutate: likeComment } = useMutation({
     mutationFn: () =>
       axiosPrivate.get(`/favourite/comment/${id}`).then((res) => res.data),
-    onSuccess: (res) => {
-      setLiked(res.status);
+    onSuccess: () => {
+      
       refetchLikeCount();
     },
     onError: () => {
+      setLiked(!liked);
       handleSnackMessage("like operation failed unexpectedly", "error");
     },
   });
 
-  const handleFavourite = () => {
-    likeComment();
+  const ToggleLikes = () => {
+    // so basicallly for a faster response, i'm effecting the like and unlike actions locally before sending the info to the server
+    if (liked) {
+      setlikeCountLocal((prev) => prev - 1);
+    } else {
+      setlikeCountLocal((prev) => prev + 1);
+    }
+    setLiked(!liked);
+    likeComment()
   };
+
 
   useEffect(() => {
     getReplies();
   }, [replyMetaData]);
+
+  useEffect(() => {
+    refetchLikeCount()
+  }, [])
+
   return (
     <div className="p-3 w-fit max-w-[80%] flex ">
       <div className="w-[3rem] h-[3rem] bg-primary rounded-xl mr-2 mt-1 overflow-hidden">
@@ -93,14 +107,14 @@ const CommentCard = ({
             </div>
             <div>{message}</div>
             <div className="text-purple-300">
-              <span className="cursor-pointer" onClick={handleFavourite}>
+              <span className="cursor-pointer" onClick={ToggleLikes}>
                 {liked ? (
                   <FavoriteIcon className="scale-75 text-red-600" />
                 ) : (
                   <FavoriteBorderIcon className="scale-75" />
                 )}
               </span>
-              <span className="mr-2 text-xs text-gray-300">{likeCount ? likeCount : likes}</span>
+              <span className="mr-2 text-xs text-gray-300">{likeCountLocal}</span>
               <span
                 className=" text-sm cursor-pointer"
                 onClick={() => {

@@ -3,6 +3,7 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useStateContext } from "../context/StateContextProvider";
 import { SuggestionsType } from "../types/api";
 import { useQueryClient, useMutation } from "react-query";
+import Spinner from "./Spinner";
 
 type FriendRequestProps = {} & SuggestionsType;
 
@@ -10,7 +11,7 @@ const FriendRequest = ({ name, profile_image, id }: FriendRequestProps) => {
   const queryClient = useQueryClient();
   const { handleSnackMessage } = useStateContext();
   const axiosPrivate = useAxiosPrivate();
-  const { mutate : followUser } = useMutation({
+  const { mutate: followUser, isLoading: isFollowing } = useMutation({
     mutationFn: () => axiosPrivate.get(`social/follow/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries("profileInfo");
@@ -23,8 +24,8 @@ const FriendRequest = ({ name, profile_image, id }: FriendRequestProps) => {
     },
   });
 
-  const handleFollow =  () => {
-    followUser()
+  const handleFollow = () => {
+    followUser();
   };
   return (
     <div className=" h-[6rem] border-2 border-alternate rounded-xl p-1 flex items-center mt-3">
@@ -48,7 +49,7 @@ const FriendRequest = ({ name, profile_image, id }: FriendRequestProps) => {
           className="scale-[1.5] text-primary cursor-pointer hover:opacity-[0.6] transition-all"
           onClick={handleFollow}
         >
-          <AddBoxIcon />
+          {isFollowing ? <Spinner width="25" height="25" /> : <AddBoxIcon />}
         </span>
       </div>
     </div>

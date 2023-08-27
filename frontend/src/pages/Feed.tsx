@@ -8,11 +8,14 @@ import CustomModal from "../Components/CustomModal";
 import TagIcon from "@mui/icons-material/Tag";
 import { PostType } from "../types/api";
 import { useMutation, useQueryClient } from "react-query";
+import Spinner from "../Components/Spinner";
+import { motion as m, AnimatePresence } from "framer-motion";
 
 type FeedProps = {
   feed: PostType[];
+  isRefetchingFeed: boolean;
 };
-const Feed = ({ feed }: FeedProps) => {
+const Feed = ({ feed, isRefetchingFeed }: FeedProps) => {
   const queryClient = useQueryClient();
   const { handleSnackMessage, profileInfo } = useStateContext();
   const axiosPrivate = useAxiosPrivate();
@@ -25,7 +28,7 @@ const Feed = ({ feed }: FeedProps) => {
     setShowNewPost(!showNewPost);
   };
 
-  const { mutate: addNewPost } = useMutation({
+  const { mutate: addNewPost, isLoading: isAddingPost } = useMutation({
     mutationFn: () =>
       axiosPrivate.post(
         "/timeline",
@@ -109,6 +112,26 @@ const Feed = ({ feed }: FeedProps) => {
           Post
         </span>
       </div>
+      <AnimatePresence>
+        {isRefetchingFeed && (
+          <m.div
+            initial={{ height: 0 }}
+            animate={{ height: "4rem" }}
+            exit={{ height: 0, transition: { delay: 0.2 } }}
+            className="w-full flex justify-center"
+          >
+            {" "}
+            <m.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { delay: 0.2 } }}
+              exit={{ opacity: 0 }}
+              className="scale-[0.5]"
+            >
+              <Spinner />
+            </m.span>
+          </m.div>
+        )}
+      </AnimatePresence>
       {feed.length < 1 && (
         <div className="text-gray-300 font-semibold text-xl text-center mt-[3rem]">
           Post Something, Or follow someone to see your feed
@@ -150,9 +173,17 @@ const Feed = ({ feed }: FeedProps) => {
             />
             <Button
               onClick={handleNewPost}
-              text="Post"
-              icon={<TagIcon />}
-              style="py-2 px-4 mt-3"
+              text={!isAddingPost ? "Post" : ""}
+              icon={
+                !isAddingPost ? (
+                  <TagIcon />
+                ) : (
+                  <span className="scale-[0.5]">
+                    <Spinner />
+                  </span>
+                )
+              }
+              style="w-full h-[3rem] mt-3"
             />
           </div>
         </CustomModal>

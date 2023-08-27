@@ -25,7 +25,7 @@ const Home = () => {
   const [openChats, setOpenChats] = useState(false);
   const axiosPrivate = useAxiosPrivate();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isRefetching : isRefetchingFeed } = useQuery({
     queryKey: ["feed"],
     queryFn: () =>
       axiosPrivate
@@ -62,12 +62,12 @@ const Home = () => {
         No suggestions to display, try follow someone or post something
       </div>
     );
-    var page = data ? <Feed feed={data.feed} /> : noFeed;
+    var page = data ? <Feed feed={data.feed} isRefetchingFeed = {isRefetchingFeed}/> : noFeed;
 
     switch (currPageNo) {
       case 0:
         if (data) {
-          page = <Feed feed={data.feed} />;
+          page = <Feed feed={data.feed} isRefetchingFeed = {isRefetchingFeed}/>;
         } else {
           page = noFeed;
         }
@@ -121,7 +121,7 @@ const Home = () => {
               <LeftSidebar />
               {data && (
                 <>
-                  <Feed feed={data.feed} />
+                  <Feed feed={data.feed} isRefetchingFeed = {isRefetchingFeed} />
                   <RightSideBar suggestions={data.suggestions} />
                 </>
               )}

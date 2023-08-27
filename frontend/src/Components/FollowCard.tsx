@@ -4,6 +4,7 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useStateContext } from "../context/StateContextProvider";
 import { authorType } from "../types/api";
 import { useMutation, useQueryClient } from "react-query";
+import Spinner from "./Spinner";
 
 type FollowCardProps = {
   follower: boolean;
@@ -25,7 +26,7 @@ const FollowCard = ({
   const { handleSnackMessage, profileInfo } = useStateContext();
   const axiosPrivate = useAxiosPrivate();
 
-  const { mutate: unFollow } = useMutation({
+  const { mutate: unFollow, isLoading: isUnFollowing } = useMutation({
     mutationFn: () => axiosPrivate.get(`social/unfollow/${id}`),
     onSuccess: () => {
       handleSnackMessage("profile unfollowed", "success");
@@ -37,17 +38,19 @@ const FollowCard = ({
     },
   });
 
-  const { mutate: removeFollower } = useMutation({
-    mutationFn: () => axiosPrivate.get(`social/remove/${id}`),
-    onSuccess: () => {
-      handleSnackMessage("follower removed", "success");
-      queryClient.invalidateQueries("profile");
-      queryClient.invalidateQueries("profileInfo");
-    },
-    onError: () => {
-      handleSnackMessage("Something went wrong", "error");
-    },
-  });
+  const { mutate: removeFollower, isLoading: isRemovingFollower } = useMutation(
+    {
+      mutationFn: () => axiosPrivate.get(`social/remove/${id}`),
+      onSuccess: () => {
+        handleSnackMessage("follower removed", "success");
+        queryClient.invalidateQueries("profile");
+        queryClient.invalidateQueries("profileInfo");
+      },
+      onError: () => {
+        handleSnackMessage("Something went wrong", "error");
+      },
+    }
+  );
   return (
     <div className=" bg-secondary rounded p-1 items-center">
       <div className="flex flex-row border-2 border-alternate p-2 rounded-xl justify-between items-center">
@@ -63,15 +66,23 @@ const FollowCard = ({
             <span className="text-gray-400">@{author?.username}</span>
           </div>
         </div>
-        <div>
+        <div className="cursor-pointer hover:text-primary transition-all delay-75">
           {profileInfo?.id === profileID &&
             (follower ? (
               <div className="" onClick={() => removeFollower()}>
-                <PersonRemoveIcon />
+                {isRemovingFollower ? (
+                  <Spinner width="30" height="30" />
+                ) : (
+                  <PersonRemoveIcon />
+                )}
               </div>
             ) : (
               <div className="" onClick={() => unFollow()}>
-                <RemoveCircleOutlineIcon />
+                {isUnFollowing ? (
+                  <Spinner width="30" height="30" />
+                ) : (
+                  <RemoveCircleOutlineIcon />
+                )}
               </div>
             ))}
         </div>
