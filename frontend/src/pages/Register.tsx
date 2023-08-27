@@ -6,6 +6,7 @@ import { useStateContext } from "../context/StateContextProvider";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation } from "react-query";
+import Spinner from "../Components/Spinner";
 
 type RegistrationInput = {
   username : string[];
@@ -19,7 +20,7 @@ const Register = () => {
   const [errorMessage, setErrorMessage] = useState<RegistrationInput | null>(null);
   const { handleSnackMessage } = useStateContext();
   const navigate = useNavigate();
-  const { mutate: register } = useMutation({
+  const { mutate: register, isLoading} = useMutation({
     mutationFn: () =>
       axios.post("/register", {
         username,
@@ -48,7 +49,7 @@ const Register = () => {
     <div>
       <AnimatePresence>
         <motion.form
-          className="h-[20rem] w-[70%] m-auto mt-[5rem] flex flex-col items-center"
+          className=" w-[95%] md:w-[70%] m-auto mt-[5rem] flex flex-col items-center"
           onSubmit={handleSubmit}
           initial={{
             opacity: 0,
@@ -66,7 +67,7 @@ const Register = () => {
           <div className="text-center font-bold text-3xl mt-5 text-gray-200">
             Welcome To <span className="text-primary">Yellow</span>
           </div>
-          <div className="flex flex-col w-[65%]">
+          <div className="flex flex-col w-full md:w-[65%]">
             <input
               placeholder="Username"
               type="text"
@@ -86,7 +87,7 @@ const Register = () => {
               </div>
             )}
           </div>
-          <div className="flex flex-col w-[65%]">
+          <div className="flex flex-col w-full md:w-[65%]">
             <input
               placeholder="email"
               type="email"
@@ -106,7 +107,7 @@ const Register = () => {
               </div>
             )}
           </div>
-          <div className="flex flex-col w-[65%]">
+          <div className="flex flex-col w-full md:w-[65%]">
             <input
               placeholder="password"
               type="password"
@@ -132,7 +133,13 @@ const Register = () => {
               </Link>
             </p>
           </div>
-          <Button type={2} text="Submit" style="px-4 py-2 mt-3" />
+          <Button
+            type={2}
+            text={isLoading ? "" : "Submit"}
+            style="w-[6rem] h-[3rem] mt-3"
+            icon={isLoading && <Spinner width="30" height="30" />}
+            disabled = {isLoading}
+          />
         </motion.form>
       </AnimatePresence>
     </div>

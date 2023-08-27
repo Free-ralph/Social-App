@@ -140,7 +140,7 @@ const Feed = ({ feed, isRefetchingFeed }: FeedProps) => {
       {feed?.map((item, index) => {
         return (
           <div key={index} className="mt-3 bg-secondary rounded-xl p-5">
-            <Card {...item} />
+            <Card userProfileID={profileInfo?.id} {...item} />
           </div>
         );
       })}
@@ -148,15 +148,16 @@ const Feed = ({ feed, isRefetchingFeed }: FeedProps) => {
         <CustomModal
           openModal={showNewPost}
           handleCloseModal={handleCloseModal}
-          height={"h-[80vh] md:h-fit "}
+          height={"h-fit "}
           width={"w-[95vw] md:w-[33rem]"}
         >
           <textarea
-            className="w-full h-[80%] md:h-[15rem] p-2 border-1 text-gray-200 bg-transparent rounded-lg focus:shadow-purple-500 focus:border-purple-500 focus:ring-purple-500"
+            className="w-full mb-5 mt-2 p-2 border-1 text-gray-200 bg-transparent rounded-lg focus:shadow-purple-500 focus:border-purple-500 focus:ring-purple-500"
             placeholder="What's on your mind?"
+            rows={8}
             onChange={(e) => setNewPost(e.target.value)}
           />
-          <div className="flex flex-col h-[20%]">
+          <div className="flex flex-col">
             <Button
               onClick={handleImageClick}
               text={`${
@@ -165,7 +166,7 @@ const Feed = ({ feed, isRefetchingFeed }: FeedProps) => {
                   : "Add Photo"
               }`}
               icon={<CameraAltIcon className="scale-[1.2] mr-3" />}
-              style={`py-2 px-4 mt-3 ${
+              style={`w-full h-[2.8rem] mt-3 ${
                 imageRef.current?.files &&
                 imageRef.current?.files?.length > 0 &&
                 "text-primary"
@@ -183,7 +184,8 @@ const Feed = ({ feed, isRefetchingFeed }: FeedProps) => {
                   </span>
                 )
               }
-              style="w-full h-[3rem] mt-3"
+              style="w-full h-[2.8rem] mt-3"
+              disabled = {isAddingPost}
             />
           </div>
         </CustomModal>

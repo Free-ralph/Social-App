@@ -7,6 +7,7 @@ import { useAuthStateContext } from "../context/AuthContextProvider";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation } from "react-query";
+import Spinner from "../Components/Spinner";
 type loginInputErrors = {
   username: string[];
   password: string[];
@@ -21,7 +22,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { setAuth } = useAuthStateContext();
 
-  const { mutate: login } = useMutation({
+  const { mutate: login, isLoading } = useMutation({
     mutationFn: () =>
       axios
         .post("/token", {
@@ -32,7 +33,6 @@ const Login = () => {
     onSuccess: (res) => {
       setAuth(res);
       navigate("/");
-      
     },
     onError: (err: any) => {
       if (err.response.data.detail) {
@@ -65,13 +65,13 @@ const Login = () => {
             opacity: 0,
             scale: 0.5,
           }}
-          className="h-[20rem] w-full lg:w-[70%] m-auto mt-[10rem] flex flex-col items-center"
+          className=" w-full lg:w-[70%] m-auto mt-[8rem] md:mt-[10rem] flex flex-col items-center"
           onSubmit={handleSubmit}
         >
           <div className="text-center font-bold text-3xl text-primary mt-5">
             Welcome Back
           </div>
-          <div className="flex flex-col w-[80%] lg:w-[65%]">
+          <div className="flex flex-col w-[95%] lg:w-[65%]">
             <input
               placeholder="Username"
               type="text"
@@ -91,7 +91,7 @@ const Login = () => {
               </div>
             )}
           </div>
-          <div className="flex flex-col w-[80%] lg:w-[65%]">
+          <div className="flex flex-col w-[95%] lg:w-[65%]">
             <input
               placeholder="password"
               type="password"
@@ -117,7 +117,13 @@ const Login = () => {
               </Link>
             </p>
           </div>
-          <Button type={2} text="Submit" style="px-4 py-2 mt-3" />
+          <Button
+            type={2}
+            text={isLoading ? "" : "Submit"}
+            style="w-[6rem] h-[3rem] mt-3"
+            icon={isLoading && <Spinner width="30" height="30" />}
+            disabled = {isLoading}
+          />
         </motion.form>
       </AnimatePresence>
     </div>

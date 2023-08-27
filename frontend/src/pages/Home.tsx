@@ -199,13 +199,13 @@ const ChatRooms = ({ openModal, handleCloseModal }: ChatRoomsProps) => {
             </p>
           </div>
           <div className="mt-5 h-[80%] p-2 border border-gray-500 rounded-lg overflow-auto">
-            {filteredRooms?.map((room, index) => (
+            {(filteredRooms && filteredRooms.length > 0) ?  filteredRooms?.map((room, index) => (
               <ChatCard
                 handleCloseNav={handleCloseModal}
                 {...room}
                 key={index}
               />
-            ))}
+            )) : <div className="w-full text-center text-gray-200 mt-2"> No Conversations </div>}
           </div>
         </div>
       )}

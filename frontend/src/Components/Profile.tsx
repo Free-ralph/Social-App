@@ -216,7 +216,7 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
             }
             className="w-full h-[3rem] mt-4 p-2 border-1 text-gray-200 bg-transparent rounded-lg focus:shadow-purple-500 focus:border-purple-500 focus:ring-purple-500"
           />
-          <button className="rounded-xl w-[5rem] h-[2.5rem] mt-3 bg-alternate text-gray-300 border-2 border-alternate hover:bg-transparent  text-sm  font-bold transition-all delay-[10] flex items-center justify-center">
+          <button disabled = {isProfileUpdating} className="rounded-xl w-[5rem] h-[2.5rem] mt-3 bg-alternate text-gray-300 border-2 border-alternate hover:bg-transparent  text-sm  font-bold transition-all delay-[10] flex items-center justify-center">
             {isProfileUpdating ? (
               <Spinner width="30" height="30" />
             ) : (
@@ -395,12 +395,13 @@ type PostFeedSectionProps = {
 };
 
 const PostFeedSection = ({ profile }: PostFeedSectionProps) => {
+  const { profileInfo } = useStateContext()
   return (
     <div className="w-full">
       {profile.posts.map((item, i) => {
         return (
           <div key={i} className="bg-secondary rounded-xl p-5 mb-3">
-            <Card {...item} />
+            <Card {...item} userProfileID={profileInfo?.id} />
           </div>
         );
       })}

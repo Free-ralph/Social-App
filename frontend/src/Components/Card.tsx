@@ -17,7 +17,9 @@ import Spinner from "./Spinner";
 import { formatDistanceToNow } from "date-fns";
 import { useQueryClient, useMutation, useQuery } from "react-query";
 
-type CardProps = {} & PostType;
+type CardProps = {
+  userProfileID?: number | string;
+} & PostType;
 
 export type replyMetaDataType = {
   replyTo: string;
@@ -35,6 +37,7 @@ const Card = ({
   likes,
   commentCount,
   timestamp,
+  userProfileID,
 }: CardProps) => {
   const timePassed = formatDistanceToNow(new Date(timestamp), {
     addSuffix: true,
@@ -244,12 +247,14 @@ const Card = ({
           </span>
           <span className="text-gray-300">{commentCount}</span>
         </div>
-        <Link
-          to={`chat/${profile?.id}`}
-          className="text-primary cursor-pointer hover:opacity-75 transition-all delay-75"
-        >
-          <MessageIcon className="scale-[1.3]" />
-        </Link>
+        {userProfileID !== profile.id && (
+          <Link
+            to={`chat/${profile?.id}`}
+            className="text-primary cursor-pointer hover:opacity-75 transition-all delay-75"
+          >
+            <MessageIcon className="scale-[1.3]" />
+          </Link>
+        )}
       </div>
       <CustomModal
         openModal={openComments}
