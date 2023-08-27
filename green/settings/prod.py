@@ -56,11 +56,11 @@ LOGGING = {
 }
 
 
-DATABASES = {  
-    'default': dj_database_url.config(
-        default=config('DB_URL')
-    )
-}  
+# DATABASES = {  
+#     'default': dj_database_url.config(
+#         default=config('DB_URL')
+#     )
+# }  
 
 
 
