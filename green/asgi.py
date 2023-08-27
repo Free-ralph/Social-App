@@ -9,10 +9,10 @@ from decouple import config
 DEBUG = config('DEBUG').lower() in ('true', 't', '1')
 
 if DEBUG:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'green.settings.dev')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'green.settings.dev')
 else:
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'green.settings.prod')
-    
+
 application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
