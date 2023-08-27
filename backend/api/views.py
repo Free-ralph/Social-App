@@ -7,10 +7,10 @@ from .serializers import (
     , PostGetSerializer, 
     ProfileSerializer, ProfileUpdateSerializer, 
     PostSerializer )
-from rest_framework_simplejwt.views import TokenObtainPairView
+
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class FeedApiView(GenericAPIView):

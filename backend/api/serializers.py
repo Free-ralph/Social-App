@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
 from django.core import exceptions
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from backend.models import Like, Profile, Post, Comment
 
 

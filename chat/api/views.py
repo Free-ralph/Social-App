@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
 from .serializers import RoomSerializer, ProfileSerializer, ChatSerializer
-from chat.models import Message, Room
+from chat.models import  Room
 from backend.models import Profile
 
 
