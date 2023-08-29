@@ -118,7 +118,7 @@ const ChatRoom = () => {
   };
   useEffect(() => {
     if (profileInfo?.id) {
-      const server = `ws://${window.location.host}/ws/chat/${roomName}/${profileInfo.id}/${id}`;
+      const server = `wss://${window.location.host}/ws/chat/${roomName}/${profileInfo.id}/${id}`;
       const client = new W3CWebSocket(server);
 
       client.onopen = () => {
