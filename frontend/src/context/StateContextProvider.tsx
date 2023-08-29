@@ -60,7 +60,7 @@ const StateContextProvider = ({ children }: ContextProviderProps) => {
   }, [auth]);
 
   useEffect(() => {
-    const server = "ws://127.0.0.1:8000/ws/chat/notification";
+    const server = "ws://green-bnvx.onrender.com/ws/chat/notification";
     const socket = new W3CWebSocket(server);
     socket.onopen = () => {
       setNotificationSocket(socket);

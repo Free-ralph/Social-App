@@ -1,7 +1,4 @@
 import ChatIcon from "@mui/icons-material/Chat";
-import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
-import NewspaperOutlinedIcon from "@mui/icons-material/NewspaperOutlined";
-import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useStateContext } from "../context/StateContextProvider";
@@ -11,16 +8,10 @@ import { Link } from "react-router-dom";
 import { useAuthStateContext } from "../context/AuthContextProvider";
 
 type NavbarProps = {
-  handlePageChange: (number: number) => void;
   toggleChatsModal: () => void;
-  currPageNo: number;
 };
 
-const Navbar = ({
-  handlePageChange,
-  currPageNo,
-  toggleChatsModal,
-}: NavbarProps) => {
+const Navbar = ({ toggleChatsModal }: NavbarProps) => {
   // const { logout } = useAuthStateContext();
   const { profileInfo } = useStateContext();
   const [openProfileNav, setOpenProfileNav] = useState(false);
@@ -31,35 +22,9 @@ const Navbar = ({
   const handleCloseProfileNav = () => {
     setOpenProfileNav(false);
   };
-  const navContent = [
-    {
-      title: "Feed",
-      icon: <NewspaperOutlinedIcon />,
-      badge: "",
-    },
-    {
-      title: "People",
-      icon: <PeopleOutlineIcon />,
-      badge: "",
-    },
-    {
-      title: "Profile",
-      icon: <PersonOutlineOutlinedIcon />,
-      badge: "",
-    },
-    {
-      title: "About ME",
-      icon: "ME",
-      badge: "",
-    },
-  ];
 
-  const inActiveNav =
-    "p-4 text-gray-200 w-[25%] text-center hover:text-primary cursor-pointer";
-  const activeNav =
-    "p-4 text-primary w-[25%] text-center hover:text-primary cursor-pointer";
   return (
-    <div className="w-[95%] grid grid-cols-3 lg:grid-cols-2 mx-auto h-[7.5rem] lg:h-[3.5rem] mt-3 lg:mb-2">
+    <div className="w-[95%] grid grid-cols-3 lg:grid-cols-2 mx-auto lg:h-[3.5rem] my-3 lg:mb-2">
       <div className="col-span-3 lg:col-span-1 flex justify-between h-[3rem]">
         <input
           type="text"
@@ -88,17 +53,6 @@ const Navbar = ({
             </AnimatePresence>
           </div>
         </div>
-      </div>
-      <div className="col-span-3 flex h-[3.5rem] w-full px-1 bg-secondary rounded-xl justify-around lg:hidden">
-        {navContent.map((item, i) => (
-          <div
-            key={i}
-            onClick={() => handlePageChange(i)}
-            className={i === currPageNo ? activeNav : inActiveNav}
-          >
-            {item.icon}
-          </div>
-        ))}
       </div>
       <div className="lg:col-span-1 hidden lg:flex justify-end my-auto gap-3 h-[3rem]">
         <div
@@ -136,13 +90,19 @@ const ProfileNav = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ ease: "easeInOut", duration: 0.2 }}
-        className="z-20 absolute flex flex-col justify-around px-3 py-3 right-[1rem] top-[4rem] w-[8rem] h-[5rem] bg-secondary border-primary border text-gray-200"
+        className=" z-[60] absolute flex flex-col justify-around px-3 py-3 right-[1rem] top-[4rem] w-[8rem] h-[5rem] bg-secondary border-primary border text-gray-200"
       >
-        <Link to={`profile/${profileInfo?.id}`} className="cursor-pointer hover:text-primary transition delay-75 w-[90%]">
+        <Link
+          to={`profile/${profileInfo?.id}`}
+          className="cursor-pointer hover:text-primary transition delay-75 w-[90%]"
+        >
           <AccountCircleIcon className="mr-2" />
           Profile
         </Link>
-        <div onClick={logout} className="cursor-pointer hover:text-primary transition delay-75 w-[90%]">
+        <div
+          onClick={logout}
+          className="cursor-pointer hover:text-primary transition delay-75 w-[90%]"
+        >
           <LogoutIcon className="mr-2" />
           Log out
         </div>

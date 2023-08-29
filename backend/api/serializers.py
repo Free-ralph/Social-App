@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
 from django.core import exceptions
-from backend.models import Like, Profile, Post, Comment
+from backend.models import Like, Profile, Post, Comment, RandomUsers
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -10,7 +10,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'username', 
-            'email', 
             'password',
         ]
 
@@ -44,6 +43,11 @@ class UserSerializer(serializers.ModelSerializer):
             'username', 
             'email'
         ]
+
+class RandomUserSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = RandomUsers
+        fields = "__all__"
 
 # class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 #     @classmethod

@@ -29,7 +29,7 @@ const Register = () => {
       }),
       onSuccess : () => {
         navigate("/login");
-        handleSnackMessage("Registration was successfull, now please login", "error");
+        handleSnackMessage("Registration was successfull, now please login", "success");
       }, 
       onError : (e : any) => {
         if (e.response.data.detail) {

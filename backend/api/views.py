@@ -1,17 +1,44 @@
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
-from backend.models import Comment, Post, Profile, Like
+from backend.models import Comment, Post, Profile, Like, RandomUsers
 from .serializers import ( 
     CommentCreateSerializer, CommentSerializer, PostProfileInfoSerializer, RegisterSerializer, UserSerializer
-    , PostGetSerializer, 
+    , PostGetSerializer, RandomUserSerializer, 
     ProfileSerializer, ProfileUpdateSerializer, 
     PostSerializer )
 
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework_simplejwt.tokens import RefreshToken
+import random
 
+class RandomAccountApiView(GenericAPIView):
+    serializer_class = RandomUserSerializer
+
+    def get(self, *args, **kwargs):
+        random_users = RandomUsers.objects.all().filter(is_used = False)
+        return Response(self.get_serializer(random.choice(random_users)).data)
+
+class LoginRandomUserApiView(GenericAPIView):
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializedData = self.get_serializer(data = request.data)
+        if serializedData.is_valid():
+            user = serializedData.save()
+            # remember you defined the create method in the RegisterSerializer to return the instance
+            # so you',ll have to explicitly run save on the returned instance
+            user.save()
+            refresh = RefreshToken.for_user(user)
+            profile = Profile.objects.get(author = user)
+            profile.name = request.data['name']
+            profile.save()
+            return Response({"access" : str(refresh.access_token), "refresh" : str(refresh)})
+            
+        return Response(serializedData.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 
 class FeedApiView(GenericAPIView):
     permission_classes = [IsAuthenticated, ]
@@ -42,7 +69,7 @@ class RegisterApiView(GenericAPIView):
         if serializedData.is_valid():
             user = serializedData.save()
             # remember you defined the create method in the RegisterSerializer to return the instance
-            # so you'll have to explicitly run save on the returned instance
+            # so you',ll have to explicitly run save on the returned instance
             user.save()
             return Response({
                 'message' : 'user created successfuly', 

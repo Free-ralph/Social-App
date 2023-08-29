@@ -16,6 +16,7 @@ import CustomModal from "../Components/CustomModal";
 import SearchIcon from "@mui/icons-material/Search";
 import ChatCard from "../Components/ChatCard";
 import AboutMePage from "./AboutMePage";
+import MiniNav from "../Components/MiniNav";
 
 const Home = () => {
   const { handleSnackMessage } = useStateContext();
@@ -25,7 +26,11 @@ const Home = () => {
   const [openChats, setOpenChats] = useState(false);
   const axiosPrivate = useAxiosPrivate();
 
-  const { data, isLoading, isRefetching : isRefetchingFeed } = useQuery({
+  const {
+    data,
+    isLoading,
+    isRefetching: isRefetchingFeed,
+  } = useQuery({
     queryKey: ["feed"],
     queryFn: () =>
       axiosPrivate
@@ -62,12 +67,16 @@ const Home = () => {
         No suggestions to display, try follow someone or post something
       </div>
     );
-    var page = data ? <Feed feed={data.feed} isRefetchingFeed = {isRefetchingFeed}/> : noFeed;
+    var page = data ? (
+      <Feed feed={data.feed} isRefetchingFeed={isRefetchingFeed} />
+    ) : (
+      noFeed
+    );
 
     switch (currPageNo) {
       case 0:
         if (data) {
-          page = <Feed feed={data.feed} isRefetchingFeed = {isRefetchingFeed}/>;
+          page = <Feed feed={data.feed} isRefetchingFeed={isRefetchingFeed} />;
         } else {
           page = noFeed;
         }
@@ -93,11 +102,8 @@ const Home = () => {
 
   return (
     <>
-      <Navbar
-        handlePageChange={handlePageChange}
-        currPageNo={currPageNo}
-        toggleChatsModal={toggleChatsModal}
-      />
+      <Navbar toggleChatsModal={toggleChatsModal} />
+      <MiniNav currPageNo={currPageNo} handlePageChange={handlePageChange} />
       <div className="">
         {isLoading ? (
           <div className="w-full flex justify-center">
@@ -121,7 +127,7 @@ const Home = () => {
               <LeftSidebar />
               {data && (
                 <>
-                  <Feed feed={data.feed} isRefetchingFeed = {isRefetchingFeed} />
+                  <Feed feed={data.feed} isRefetchingFeed={isRefetchingFeed} />
                   <RightSideBar suggestions={data.suggestions} />
                 </>
               )}
@@ -199,19 +205,25 @@ const ChatRooms = ({ openModal, handleCloseModal }: ChatRoomsProps) => {
             </p>
           </div>
           <div className="mt-5 h-[80%] p-2 border border-gray-500 rounded-lg overflow-auto">
-            {(filteredRooms && filteredRooms.length > 0) ?  filteredRooms?.map((room, index) => (
-              <ChatCard
-                handleCloseNav={handleCloseModal}
-                {...room}
-                key={index}
-              />
-            )) : <div className="w-full text-center text-gray-200 mt-2"> No Conversations </div>}
+            {filteredRooms && filteredRooms.length > 0 ? (
+              filteredRooms?.map((room, index) => (
+                <ChatCard
+                  handleCloseNav={handleCloseModal}
+                  {...room}
+                  key={index}
+                />
+              ))
+            ) : (
+              <div className="w-full text-center text-gray-200 mt-2">
+                {" "}
+                No Conversations{" "}
+              </div>
+            )}
           </div>
         </div>
       )}
     </CustomModal>
   );
 };
-
 
 export default Home;

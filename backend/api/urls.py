@@ -4,7 +4,8 @@ from .views import (
         FeedApiView, PostApiView, ProfileApiView, 
         FollowApiView, UpdateProfileApiView,LikeUnlikeApiView,
         AddCommentApiView, CommentLikeUnlikeApiView, CommentReplyApiView,
-        CommentApiView, UserProfileApiView, CommentLikeCount
+        CommentApiView, UserProfileApiView, CommentLikeCount, RandomAccountApiView, 
+        LoginRandomUserApiView
         )
 from rest_framework_simplejwt.views import (
     TokenRefreshView, TokenObtainPairView
@@ -26,4 +27,7 @@ urlpatterns = [
     path('comment/reply/<int:comment_id>', CommentReplyApiView.as_view()),
     path('comments/<str:type>/<int:id>', CommentApiView.as_view()),
     path('comment/like-count/<int:id>', CommentLikeCount.as_view()),
+    path('random_account/', RandomAccountApiView.as_view()),
+    path('random-login', LoginRandomUserApiView.as_view()),
+
 ]

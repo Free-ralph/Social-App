@@ -118,7 +118,7 @@ const ChatRoom = () => {
   };
   useEffect(() => {
     if (profileInfo?.id) {
-      const server = `ws://127.0.0.1:8000/ws/chat/${roomName}/${profileInfo.id}/${id}`;
+      const server = `ws://green-bnvx.onrender.com/ws/chat/${roomName}/${profileInfo.id}/${id}`;
       const client = new W3CWebSocket(server);
 
       client.onopen = () => {
