@@ -181,7 +181,7 @@ const ChatRoom = () => {
   }, [chats]);
 
   return (
-    <div className="text-gray-300 flex w-full h-screen p-3 justify-between relative overflow-hidden">
+    <div className="text-gray-300 flex w-full h-screen p-2 md:p-3 justify-between relative overflow-hidden">
       <ChatLeftBar
         handleCloseNav={handleCloseNav}
         isLoadingRooms={isLoadingRooms}
@@ -224,7 +224,7 @@ const ChatRoom = () => {
           exit="hidden"
           className="w-full md:w-[75%] h-full flex justify-between overflow-hidden"
         >
-          <div className="w-full lg:w-[62%] bg-secondary rounded-xl py-4 px-6 flex flex-col justify-between">
+          <div className="w-full lg:w-[62%] bg-secondary rounded-xl py-4 px-4 md:px-6 flex flex-col justify-between">
             <div className="flex items-center h-[10%] justify-between">
               <div className="flex gap-1 items-center">
                 <div className="bg-primary w-[3rem] h-[3rem] rounded-xl overflow-hidden">
@@ -244,7 +244,7 @@ const ChatRoom = () => {
               </span>
             </div>
             <div
-              className="border-1 border-alternate rounded-xl h-[88%] relative overflow-y-scroll my-5"
+              className="border-1 border-alternate rounded-xl h-[88%] relative overflow-y-scroll hideScrollBar my-5"
               ref={chatContainerRef}
             >
               <div className="absolute w-full h-full">
@@ -263,7 +263,7 @@ const ChatRoom = () => {
                           chat.receiver_profile_id != profileInfo?.id
                             ? "bg-primary rounded-br-[0]"
                             : "bg-purple-400 rounded-bl-[0]"
-                        }  rounded-xl my-1 mx-2 text-start`}
+                        }  rounded-xl my-1 mx-2 text-start text-sm`}
                       >
                         {chat.content}
                       </p>

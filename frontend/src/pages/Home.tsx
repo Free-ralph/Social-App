@@ -25,6 +25,8 @@ const Home = () => {
   const [currPage, setcurrPage] = useState<ReactNode | null>();
   const [openChats, setOpenChats] = useState(false);
   const axiosPrivate = useAxiosPrivate();
+  const [filteredFeeds, setFilteredFeeds] = useState<PostType[]>();
+  const [postSearchInput, setPostSearchInput] = useState("");
 
   const {
     data,
@@ -36,6 +38,9 @@ const Home = () => {
       axiosPrivate
         .get<{ feed: PostType[]; suggestions: SuggestionsType[] }>("/feed")
         .then((res) => res.data),
+    onSuccess: (res) => {
+      setFilteredFeeds(res.feed);
+    },
     onError: () => {
       handleSnackMessage(
         "something's not right, no worries, we got you",
@@ -43,6 +48,21 @@ const Home = () => {
       );
     },
   });
+
+  const SearchPosts = () => {
+    if (data) {
+      console.log(filteredFeeds)
+      setFilteredFeeds(
+        data.feed.filter(
+          (feed) =>
+            postSearchInput === "" ||
+            feed.profile.name
+              .toLocaleLowerCase()
+              .includes(postSearchInput.toLocaleLowerCase())
+        )
+      );
+    }
+  };
 
   const handlePageChange = (number: number) => {
     setCurrPageNo(number);
@@ -52,9 +72,17 @@ const Home = () => {
     setOpenChats(false);
   };
 
+  const handlePostSearchInput = (searchInput: string) => {
+    setPostSearchInput(searchInput);
+  };
+
   const toggleChatsModal = () => {
     setOpenChats(!openChats);
   };
+
+  useEffect(() => {
+    SearchPosts();
+  }, [postSearchInput]);
 
   useEffect(() => {
     const noFeed = (
@@ -67,16 +95,18 @@ const Home = () => {
         No suggestions to display, try follow someone or post something
       </div>
     );
-    var page = data ? (
-      <Feed feed={data.feed} isRefetchingFeed={isRefetchingFeed} />
+    var page = filteredFeeds ? (
+      <Feed feed={filteredFeeds} isRefetchingFeed={isRefetchingFeed} />
     ) : (
       noFeed
     );
 
     switch (currPageNo) {
       case 0:
-        if (data) {
-          page = <Feed feed={data.feed} isRefetchingFeed={isRefetchingFeed} />;
+        if (filteredFeeds) {
+          page = (
+            <Feed feed={filteredFeeds} isRefetchingFeed={isRefetchingFeed} />
+          );
         } else {
           page = noFeed;
         }
@@ -98,11 +128,15 @@ const Home = () => {
         break;
     }
     setcurrPage(page);
-  }, [currPageNo, data]);
+  }, [currPageNo, data, postSearchInput]);
 
   return (
     <>
-      <Navbar toggleChatsModal={toggleChatsModal} />
+      <Navbar
+        toggleChatsModal={toggleChatsModal}
+        handlePostSearchInput={handlePostSearchInput}
+        postSearchInput={postSearchInput}
+      />
       <MiniNav currPageNo={currPageNo} handlePageChange={handlePageChange} />
       <div className="">
         {isLoading ? (
@@ -125,9 +159,12 @@ const Home = () => {
             </AnimatePresence>
             <div className="hidden lg:flex flex-row w-full h-full justify-around">
               <LeftSidebar />
-              {data && (
+              {(data && filteredFeeds) && (
                 <>
-                  <Feed feed={data.feed} isRefetchingFeed={isRefetchingFeed} />
+                  <Feed
+                    feed={filteredFeeds}
+                    isRefetchingFeed={isRefetchingFeed}
+                  />
                   <RightSideBar suggestions={data.suggestions} />
                 </>
               )}

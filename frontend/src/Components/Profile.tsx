@@ -311,13 +311,13 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
         </div>
         {!isMobile && (
           <Link to="/">
-            <div className="absolute text-primary left-[5rem] top-[2rem]">
+            <div className="absolute text-primary left-[2rem] top-[1.5rem] md:left-[5rem] md:top-[2rem]">
               <HomeIcon className="scale-[1.5]" />
             </div>
           </Link>
         )}
       </div>
-      <div className="w-[90%] m-auto mt-10">
+      <div className="w-[95%] m-auto mt-10">
         <div className="flex flex-col lg:flex-row w-full justify-between ">
           <div className="bg-secondary h-fit rounded-xl p-5 w-full lg:w-[24%] lg:sticky lg:top-4 text-gray-200">
             {isProfileUpdating ? (

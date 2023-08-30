@@ -131,7 +131,7 @@ const MobileChatLeftBar = ({
       animate="visible"
       exit="hidden"
       variants={DrawerVariant}
-      className="md:hidden w-[17rem] p-4 absolute top-0 left-0 bg-secondary z-50 border h-full"
+      className="md:hidden w-[17rem] p-4 absolute top-0 left-0 bg-secondary z-50 border border-gray-200 border-opacity-10 h-full"
     >
       <div className="flex justify-between items-center">
         <div className="flex">

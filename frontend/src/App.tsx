@@ -28,7 +28,7 @@ function App() {
           {snackMessage.message}
         </Alert>
       </Snackbar>
-      <div className="h-screen w-screen overflow-x-hidden">
+      <div className="h-screen w-screen overflow-x-hidden hideScrollBar">
         <AnimatePresence>
           <Routes location={location} key={location.pathname}>
           <Route path='/' element={<Home />} />

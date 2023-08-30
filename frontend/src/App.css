@@ -18,3 +18,11 @@
 body {
   background-color:  #1a1a1a;
 }
+
+.hideScrollBar::-webkit-scrollbar{
+  display: none;
+}
+.hideScrollBar{
+  -ms-overflw-style : none;
+  scrollbar-width : none;
+}

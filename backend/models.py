@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from backend.utils import compress_and_save_image
 
 class Post(models.Model):
     profile = models.ForeignKey('Profile', related_name = 'posts', on_delete = models.CASCADE)
@@ -39,6 +40,13 @@ class Profile(models.Model):
     #     return self.followers
     def __str__(self):
         return self.author.username
+    
+    def save(self, *args, **kwargs):
+        if self.profile_image:
+            compress_and_save_image(self.profile_image, quality=30)
+        if self.cover_image:
+            compress_and_save_image(self.cover_image, quality=70)
+        super().save(*args, **kwargs)
 
 @receiver(post_save, sender = User)
 def create_profile(sender, instance, created, **kwargs):

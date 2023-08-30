@@ -9,12 +9,15 @@ import { useAuthStateContext } from "../context/AuthContextProvider";
 
 type NavbarProps = {
   toggleChatsModal: () => void;
+  handlePostSearchInput : (searchInput : string) => void;
+  postSearchInput : string
 };
 
-const Navbar = ({ toggleChatsModal }: NavbarProps) => {
+const Navbar = ({ toggleChatsModal, handlePostSearchInput, postSearchInput}: NavbarProps) => {
   // const { logout } = useAuthStateContext();
   const { profileInfo } = useStateContext();
   const [openProfileNav, setOpenProfileNav] = useState(false);
+  
 
   const handleOpenProfileNav = () => {
     setOpenProfileNav(true);
@@ -22,6 +25,7 @@ const Navbar = ({ toggleChatsModal }: NavbarProps) => {
   const handleCloseProfileNav = () => {
     setOpenProfileNav(false);
   };
+  
 
   return (
     <div className="w-[95%] grid grid-cols-3 lg:grid-cols-2 mx-auto lg:h-[3.5rem] my-3 lg:mb-2">
@@ -29,6 +33,8 @@ const Navbar = ({ toggleChatsModal }: NavbarProps) => {
         <input
           type="text"
           placeholder={"#Explore"}
+          value = {postSearchInput}
+          onChange={(e) => handlePostSearchInput(e.target.value)}
           className="w-[12rem] md:w-[15rem] p-2 lg:block text-gray-200 bg-secondary rounded-xl focus:shadow-purple-500 focus:border-purple-500 focus:ring-purple-500 "
         />
         <div className="flex lg:hidden gap-1">
