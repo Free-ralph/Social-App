@@ -216,7 +216,7 @@ const ChatRooms = ({ openModal, handleCloseModal }: ChatRoomsProps) => {
   };
 
   useEffect(() => {
-    SearchNotes();
+    rooms && SearchNotes();
   }, [searchInput]);
 
   return (
