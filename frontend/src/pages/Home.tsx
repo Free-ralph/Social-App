@@ -31,6 +31,7 @@ const Home = () => {
   const {
     data,
     isLoading,
+    isFetching,
     isRefetching: isRefetchingFeed,
   } = useQuery({
     queryKey: ["feed"],
@@ -51,7 +52,6 @@ const Home = () => {
 
   const SearchPosts = () => {
     if (data) {
-      console.log(filteredFeeds)
       setFilteredFeeds(
         data.feed.filter(
           (feed) =>
@@ -95,11 +95,13 @@ const Home = () => {
         No suggestions to display, try follow someone or post something
       </div>
     );
-    var page = filteredFeeds ? (
-      <Feed feed={filteredFeeds} isRefetchingFeed={isRefetchingFeed} />
-    ) : (
-      noFeed
-    );
+
+    var page =
+      filteredFeeds && filteredFeeds.length === 0 ? (
+        <Feed feed={filteredFeeds} isRefetchingFeed={isRefetchingFeed} />
+      ) : (
+        noFeed
+      );
 
     switch (currPageNo) {
       case 0:
@@ -128,7 +130,7 @@ const Home = () => {
         break;
     }
     setcurrPage(page);
-  }, [currPageNo, data, postSearchInput]);
+  }, [currPageNo, data, filteredFeeds, postSearchInput]);
 
   return (
     <>
@@ -139,7 +141,7 @@ const Home = () => {
       />
       <MiniNav currPageNo={currPageNo} handlePageChange={handlePageChange} />
       <div className="">
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <div className="w-full flex justify-center">
             <Spinner />
           </div>
@@ -159,7 +161,7 @@ const Home = () => {
             </AnimatePresence>
             <div className="hidden lg:flex flex-row w-full h-full justify-around">
               <LeftSidebar />
-              {(data && filteredFeeds) && (
+              {data && filteredFeeds && (
                 <>
                   <Feed
                     feed={filteredFeeds}
@@ -200,15 +202,17 @@ const ChatRooms = ({ openModal, handleCloseModal }: ChatRoomsProps) => {
   });
 
   const SearchNotes = () => {
-    setFilteredRooms(
-      rooms?.filter(
-        (room) =>
-          searchInput === "" ||
-          room.member_name
-            .toLocaleLowerCase()
-            .includes(searchInput.toLocaleLowerCase())
-      )
-    );
+    if (rooms) {
+      setFilteredRooms(
+        rooms.filter(
+          (room) =>
+            searchInput === "" ||
+            room.member_name
+              .toLocaleLowerCase()
+              .includes(searchInput.toLocaleLowerCase())
+        )
+      );
+    }
   };
 
   useEffect(() => {
