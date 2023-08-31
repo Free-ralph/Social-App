@@ -204,7 +204,6 @@ const ChatRooms = ({ openModal, handleCloseModal }: ChatRoomsProps) => {
 
   const SearchNotes = () => {
     if (rooms) {
-      console.log(rooms)
       setFilteredRooms(
         rooms.filter(
           (room) =>

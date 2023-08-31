@@ -34,6 +34,12 @@ class LoginRandomUserApiView(GenericAPIView):
             refresh = RefreshToken.for_user(user)
             profile = Profile.objects.get(author = user)
             profile.name = request.data['name']
+            randomUserId = request.data['id']
+            randomUser_qs = RandomUsers.objects.filter(id = randomUserId)
+            if randomUser_qs.exists():
+                randomUser = randomUser_qs[0]
+                randomUser.is_used = True
+                randomUser.save()
             profile.save()
             return Response({"access" : str(refresh.access_token), "refresh" : str(refresh)})
             

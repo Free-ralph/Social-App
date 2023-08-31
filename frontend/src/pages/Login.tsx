@@ -19,6 +19,7 @@ type RandomUserType = {
   username: string;
   password: string;
   name: string;
+  id : number;
 };
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -63,12 +64,13 @@ const Login = () => {
 
   const { mutate: loginRandomUser, isLoading: loginRandomIsLoading } =
     useMutation({
-      mutationFn: ({ username, password, name }: RandomUserType) =>
+      mutationFn: ({ username, password, name, id }: RandomUserType) =>
         axios
           .post("/random-login", {
             username,
             password,
             name,
+            id
           })
           .then((res) => res.data),
       onSuccess: (res) => {
@@ -100,6 +102,7 @@ const Login = () => {
         username: randomUser.username,
         password: randomUser.password,
         name: randomUser.name,
+        id : randomUser.id
       });
     }
   };
