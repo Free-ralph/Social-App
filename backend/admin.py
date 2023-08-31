@@ -11,6 +11,12 @@ class PostAdmin(admin.ModelAdmin):
         LikeInline
     ]
 
+class RandomUserAdmin(admin.ModelAdmin):
+    list_display = [
+        'is_used', 
+        'name'
+    ]
+
 
 admin.site.register(Profile)
 admin.site.register(Like)
