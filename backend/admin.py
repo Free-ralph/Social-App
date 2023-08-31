@@ -13,8 +13,9 @@ class PostAdmin(admin.ModelAdmin):
 
 class RandomUserAdmin(admin.ModelAdmin):
     list_display = [
-        'is_used', 
-        'name'
+        'username',
+        'name',
+        'is_used' 
     ]
 
 
