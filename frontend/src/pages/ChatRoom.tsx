@@ -91,6 +91,7 @@ const ChatRoom = () => {
     refetch: getRooms,
     isLoading: isLoadingRooms,
   } = useQuery({
+    queryKey : ["rooms"],
     queryFn: () =>
       axiosPrivate.get<RoomType[]>(`/chat/rooms`).then((res) => res.data),
     onError: () => {

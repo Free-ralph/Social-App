@@ -191,6 +191,7 @@ const ChatRooms = ({ openModal, handleCloseModal }: ChatRoomsProps) => {
   const [searchInput, setsearchInput] = useState("");
 
   const { data: rooms, isLoading } = useQuery({
+    queryKey : ["rooms"], 
     queryFn: () =>
       axiosPrivate.get<RoomType[]>(`/chat/rooms`).then((res) => res.data),
     onError: () => {
