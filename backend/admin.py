@@ -21,5 +21,5 @@ class RandomUserAdmin(admin.ModelAdmin):
 admin.site.register(Profile)
 admin.site.register(Like)
 admin.site.register(Comment)
-admin.site.register(RandomUsers)
+admin.site.register(RandomUsers, RandomUserAdmin)
 admin.site.register(Post, PostAdmin)
