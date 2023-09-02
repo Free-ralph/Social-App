@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SuggestionsType } from "../types/api";
 
 type RightSideBarProps = {
-  suggestions: SuggestionsType[];
+  suggestions: SuggestionsType[] | undefined;
 };
 const RightSidebar = ({ suggestions }: RightSideBarProps) => {
   return (
@@ -12,32 +12,38 @@ const RightSidebar = ({ suggestions }: RightSideBarProps) => {
         <div className="w-full flex flex-row justify-between">
           <p className="text-gray-100 font-bold text-sm">SUGGESTIONS</p>
           <span className="rounded-xl text-xs bg-primary text-black font-bold px-2 flex items-center justify-center w-[2rem]">
-            {suggestions?.length}
+            {suggestions ? suggestions.length : 0}
           </span>
         </div>
-        <div className="mt-3">
-          <AnimatePresence>
-            {suggestions?.length > 0 ? (
-              suggestions?.map((profile, i) => {
-                return (
-                  <motion.div
-                    key={i}
-                    exit={{
-                      scale: 0.9,
-                      opacity: 0,
-                    }}
-                  >
-                    <FriendRequest {...profile} />
-                  </motion.div>
-                );
-              })
-            ) : (
-              <div className="h-full w-full flex items-center justify-center text-gray-200 mt-10 md:mt-5">
-                  No suggestions to display
-              </div>
-            )}
-          </AnimatePresence>
-        </div>
+        {suggestions && (
+          <>
+            <div className="mt-3">
+              <AnimatePresence>
+                {suggestions?.length > 0 ? (
+                  suggestions?.map((profile, i) => {
+                    return (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{
+                          scale: 0.9,
+                          opacity: 0,
+                        }}
+                      >
+                        <FriendRequest {...profile} />
+                      </motion.div>
+                    );
+                  })
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-gray-200 mt-10 md:mt-5">
+                    No suggestions to display
+                  </div>
+                )}
+              </AnimatePresence>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

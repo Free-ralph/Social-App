@@ -19,7 +19,8 @@ const FriendRequest = ({ name, profile_image, id }: FriendRequestProps) => {
       axiosPrivate.get(`social/follow/${id}`);
       handleSnackMessage("Account Followed successfully", "success");
     },
-    onError: () => {
+    onError: (e) => {
+      console.log(e)
       handleSnackMessage("Something went wrong", "error");
     },
   });

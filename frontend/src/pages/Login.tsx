@@ -202,7 +202,7 @@ const Login = () => {
             type={2}
             text={isLoading || loginRandomIsLoading ? "" : "Submit"}
             style="w-[6rem] h-[3rem] mt-3"
-            icon={isLoading || loginRandomIsLoading && <Spinner width="30" height="30" />}
+            icon={(isLoading || loginRandomIsLoading) && <Spinner width="30" height="30" />}
             disabled={isLoading || loginRandomIsLoading}
           />
         </motion.form>

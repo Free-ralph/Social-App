@@ -42,7 +42,7 @@ function useAuthStateContext() {
     return context;
   }
 
-  throw new Error("useStateContext must be used within a StateContextProvider");
+  throw new Error("useAuthStateContext must be used within a AuthContextProvider");
 }
 
 export { useAuthStateContext, AuthContextProvider };

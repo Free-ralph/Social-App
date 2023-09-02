@@ -12,10 +12,10 @@ import Spinner from "../Components/Spinner";
 import { motion as m, AnimatePresence } from "framer-motion";
 
 type FeedProps = {
-  feed: PostType[];
-  isRefetchingFeed: boolean;
+  feed: PostType[] | undefined;
+  isfetchingFeed: boolean;
 };
-const Feed = ({ feed, isRefetchingFeed }: FeedProps) => {
+const Feed = ({ feed, isfetchingFeed }: FeedProps) => {
   const queryClient = useQueryClient();
   const { handleSnackMessage, profileInfo } = useStateContext();
   const axiosPrivate = useAxiosPrivate();
@@ -113,7 +113,7 @@ const Feed = ({ feed, isRefetchingFeed }: FeedProps) => {
         </span>
       </div>
       <AnimatePresence>
-        {isRefetchingFeed && (
+        {isfetchingFeed && (
           <m.div
             initial={{ height: 0 }}
             animate={{ height: "4rem" }}
@@ -132,63 +132,68 @@ const Feed = ({ feed, isRefetchingFeed }: FeedProps) => {
           </m.div>
         )}
       </AnimatePresence>
-      {feed.length < 1 && (
-        <div className="text-gray-300 font-semibold text-xl text-center mt-[3rem]">
-          Post Something, Or follow someone to see your feed
-        </div>
-      )}
-      {feed?.map((item, index) => {
-        return (
-          <div key={index} className="mt-3 bg-secondary rounded-xl p-5">
-            <Card userProfileID={profileInfo?.id} {...item} />
-          </div>
-        );
-      })}
-      {showNewPost && (
-        <CustomModal
-          openModal={showNewPost}
-          handleCloseModal={handleCloseModal}
-          height={"h-fit "}
-          width={"w-[95vw] md:w-[33rem]"}
-        >
-          <textarea
-            className="w-full mb-5 mt-2 p-2 border-1 text-gray-200 bg-transparent rounded-lg focus:shadow-purple-500 focus:border-purple-500 focus:ring-purple-500"
-            placeholder="What's on your mind?"
-            rows={8}
-            onChange={(e) => setNewPost(e.target.value)}
-          />
-          <div className="flex flex-col">
-            <Button
-              onClick={handleImageClick}
-              text={`${
-                imageRef.current?.files && imageRef.current?.files?.length > 0
-                  ? "Change Photo"
-                  : "Add Photo"
-              }`}
-              icon={<CameraAltIcon className="scale-[1.2] mr-3" />}
-              style={`w-full h-[2.8rem] mt-3 ${
-                imageRef.current?.files &&
-                imageRef.current?.files?.length > 0 &&
-                "text-primary"
-              }`}
-            />
-            <Button
-              onClick={handleNewPost}
-              text={!isAddingPost ? "Post" : ""}
-              icon={
-                !isAddingPost ? (
-                  <TagIcon />
-                ) : (
-                  <span className="scale-[0.5]">
-                    <Spinner />
-                  </span>
-                )
-              }
-              style="w-full h-[2.8rem] mt-3"
-              disabled = {isAddingPost}
-            />
-          </div>
-        </CustomModal>
+      {feed && (
+        <>
+          {feed.length < 1 && (
+            <div className="text-gray-300 font-semibold text-xl text-center mt-[3rem]">
+              Post Something, Or follow someone to see your feed
+            </div>
+          )}
+          {feed?.map((item, index) => {
+            return (
+              <div key={index} className="mt-3 bg-secondary rounded-xl p-5">
+                <Card userProfileID={profileInfo?.id} {...item} />
+              </div>
+            );
+          })}
+          {showNewPost && (
+            <CustomModal
+              openModal={showNewPost}
+              handleCloseModal={handleCloseModal}
+              height={"h-fit "}
+              width={"w-[95vw] md:w-[33rem]"}
+            >
+              <textarea
+                className="w-full mb-5 mt-2 p-2 border-1 text-gray-200 bg-transparent rounded-lg focus:shadow-purple-500 focus:border-purple-500 focus:ring-purple-500"
+                placeholder="What's on your mind?"
+                rows={8}
+                onChange={(e) => setNewPost(e.target.value)}
+              />
+              <div className="flex flex-col">
+                <Button
+                  onClick={handleImageClick}
+                  text={`${
+                    imageRef.current?.files &&
+                    imageRef.current?.files?.length > 0
+                      ? "Change Photo"
+                      : "Add Photo"
+                  }`}
+                  icon={<CameraAltIcon className="scale-[1.2] mr-3" />}
+                  style={`w-full h-[2.8rem] mt-3 ${
+                    imageRef.current?.files &&
+                    imageRef.current?.files?.length > 0 &&
+                    "text-primary"
+                  }`}
+                />
+                <Button
+                  onClick={handleNewPost}
+                  text={!isAddingPost ? "Post" : ""}
+                  icon={
+                    !isAddingPost ? (
+                      <TagIcon />
+                    ) : (
+                      <span className="scale-[0.5]">
+                        <Spinner />
+                      </span>
+                    )
+                  }
+                  style="w-full h-[2.8rem] mt-3"
+                  disabled={isAddingPost}
+                />
+              </div>
+            </CustomModal>
+          )}
+        </>
       )}
     </div>
   );

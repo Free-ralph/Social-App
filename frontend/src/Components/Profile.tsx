@@ -73,6 +73,7 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
       onSuccess: () => {
         handleSnackMessage("profile Image updated", "success");
         queryClient.invalidateQueries("profile");
+        queryClient.invalidateQueries("profileInfo");
       },
       onError: () => {
         handleSnackMessage("profile Image update failed", "error");
@@ -96,6 +97,7 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
       onSuccess: () => {
         handleSnackMessage("Cover Image updated", "success");
         queryClient.invalidateQueries("profile");
+        queryClient.invalidateQueries("profileInfo");
       },
       onError: () => {
         handleSnackMessage("Cover Image update failed", "error");
@@ -121,6 +123,7 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
         handleSnackMessage("updated succesfully", "success");
         setOpenModal(false);
         queryClient.invalidateQueries("profile");
+        queryClient.invalidateQueries("profileInfo");
       },
       onError: () => {
         handleSnackMessage("Bio update failed", "error");

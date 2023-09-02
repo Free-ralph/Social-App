@@ -30,9 +30,7 @@ const Home = () => {
 
   const {
     data,
-    isLoading,
-    isFetching,
-    isRefetching: isRefetchingFeed,
+    isFetching
   } = useQuery({
     queryKey: ["feed"],
     queryFn: () =>
@@ -98,7 +96,7 @@ const Home = () => {
 
     var page =
       filteredFeeds && filteredFeeds.length === 0 ? (
-        <Feed feed={filteredFeeds} isRefetchingFeed={isRefetchingFeed} />
+        <Feed feed={filteredFeeds} isfetchingFeed={isFetching} />
       ) : (
         noFeed
       );
@@ -106,9 +104,7 @@ const Home = () => {
     switch (currPageNo) {
       case 0:
         if (filteredFeeds) {
-          page = (
-            <Feed feed={filteredFeeds} isRefetchingFeed={isRefetchingFeed} />
-          );
+          page = <Feed feed={filteredFeeds} isfetchingFeed={isFetching} />;
         } else {
           page = noFeed;
         }
@@ -141,38 +137,27 @@ const Home = () => {
       />
       <MiniNav currPageNo={currPageNo} handlePageChange={handlePageChange} />
       <div className="">
-        {isLoading || isFetching ? (
-          <div className="w-full flex justify-center">
-            <Spinner />
+        (
+        <>
+          <AnimatePresence>
+            <m.div
+              variants={FadeVariant}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              key={currPageNo}
+              className="block lg:hidden"
+            >
+              {currPage}
+            </m.div>
+          </AnimatePresence>
+          <div className="hidden lg:flex flex-row w-full h-full justify-around">
+            <LeftSidebar />
+            <Feed feed={filteredFeeds} isfetchingFeed={isFetching} />
+            <RightSideBar suggestions={data?.suggestions} />
           </div>
-        ) : (
-          <>
-            <AnimatePresence>
-              <m.div
-                variants={FadeVariant}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                key={currPageNo}
-                className="block lg:hidden"
-              >
-                {currPage}
-              </m.div>
-            </AnimatePresence>
-            <div className="hidden lg:flex flex-row w-full h-full justify-around">
-              <LeftSidebar />
-              {data && filteredFeeds && (
-                <>
-                  <Feed
-                    feed={filteredFeeds}
-                    isRefetchingFeed={isRefetchingFeed}
-                  />
-                  <RightSideBar suggestions={data.suggestions} />
-                </>
-              )}
-            </div>
-          </>
-        )}
+        </>
+        )
       </div>
       <ChatRooms openModal={openChats} handleCloseModal={handleCloseChats} />
     </>
@@ -191,7 +176,7 @@ const ChatRooms = ({ openModal, handleCloseModal }: ChatRoomsProps) => {
   const [searchInput, setsearchInput] = useState("");
 
   const { data: rooms, isLoading } = useQuery({
-    queryKey : ["rooms"], 
+    queryKey: ["rooms"],
     queryFn: () =>
       axiosPrivate.get<RoomType[]>(`/chat/rooms`).then((res) => res.data),
     onError: () => {
