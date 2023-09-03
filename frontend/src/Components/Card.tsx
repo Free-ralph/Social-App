@@ -13,7 +13,7 @@ import Button from "./Button";
 import CommentCard from "./CommentCard";
 import MessageIcon from "@mui/icons-material/Message";
 import { PostType, CommentType } from "../types/api";
-import Spinner from "./Spinner";
+import Spinner, { OvalSpinner } from "./Spinner";
 import { formatDistanceToNow } from "date-fns";
 import { useQueryClient, useMutation, useQuery } from "react-query";
 
@@ -54,6 +54,8 @@ const Card = ({
     isReplying: false,
     firstComment: false,
   });
+  const [isPostImageLoaded, setIsPostImageLoaded] = useState(false);
+  const [isProfileImageLoaded, setIsProfileImageLoaded] = useState(false);
   const commentInputRef = useRef<HTMLInputElement>(null);
   const axiosPrivate = useAxiosPrivate();
 
@@ -163,11 +165,21 @@ const Card = ({
       <div className="flex md:p-3 items-center flex-row justify-between">
         <Link to={`/profile/${profile?.id}`} className="">
           <div className="flex flex-row cursor-pointer">
-            <div className="h-[3rem] bg-pink-500 w-[4rem] rounded-xl md:ml-3 mr-2 overflow-hidden">
+            <div className="h-[3rem] bg-primary w-[4rem] rounded-xl md:ml-3 mr-2 overflow-hidden">
+              <div
+                className={`${
+                  isProfileImageLoaded && "hidden"
+                } h-full w-full flex items-center justify-center`}
+              >
+                <OvalSpinner width="25" height="25" color="#282828" />
+              </div>
               <img
                 src={profile.profile_image}
+                onLoad={() => setIsProfileImageLoaded(true)}
+                className={`h-full w-full object-cover ${
+                  !isProfileImageLoaded && "hidden"
+                }`}
                 loading="lazy"
-                className="h-full w-full object-cover"
               />
             </div>
             <div>
@@ -184,10 +196,20 @@ const Card = ({
       <p className="my-3 md:my-0 md:p-5 text-sm text-gray-200">{message}</p>
       {image && (
         <div className="cursor-pointer md:p-3 h-[20rem]">
+          <div
+            className={`${
+              isPostImageLoaded && "hidden"
+            } h-full w-full flex items-center justify-center`}
+          >
+            <OvalSpinner width="45" height="45" />
+          </div>
           <img
-            loading="lazy"
-            className="w-full rounded-lg h-full object-cover object-top text-gray-300"
+            className={`${
+              !isPostImageLoaded && "hidden"
+            } w-full rounded-lg h-full object-cover object-top text-gray-300`}
             src={image}
+            onLoad={() => setIsPostImageLoaded(true)}
+            loading="lazy"
             alt={`${profile?.name}-post`}
           />
         </div>

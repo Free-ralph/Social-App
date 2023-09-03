@@ -3,7 +3,8 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useStateContext } from "../context/StateContextProvider";
 import { SuggestionsType } from "../types/api";
 import { useQueryClient, useMutation } from "react-query";
-import Spinner from "./Spinner";
+import Spinner, { OvalSpinner } from "./Spinner";
+import { useState } from "react";
 
 type FriendRequestProps = {} & SuggestionsType;
 
@@ -11,6 +12,7 @@ const FriendRequest = ({ name, profile_image, id }: FriendRequestProps) => {
   const queryClient = useQueryClient();
   const { handleSnackMessage } = useStateContext();
   const axiosPrivate = useAxiosPrivate();
+  const [isProfileImageLoaded, setIsProfileImageLoaded] = useState(false);
   const { mutate: followUser, isLoading: isFollowing } = useMutation({
     mutationFn: () => axiosPrivate.get(`social/follow/${id}`),
     onSuccess: () => {
@@ -20,7 +22,7 @@ const FriendRequest = ({ name, profile_image, id }: FriendRequestProps) => {
       handleSnackMessage("Account Followed successfully", "success");
     },
     onError: (e) => {
-      console.log(e)
+      console.log(e);
       handleSnackMessage("Something went wrong", "error");
     },
   });
@@ -32,12 +34,22 @@ const FriendRequest = ({ name, profile_image, id }: FriendRequestProps) => {
     <div className=" h-[6rem] border-2 border-alternate rounded-xl p-1 flex items-center mt-3">
       <div className="flex flex-row w-[90%] mr-1">
         <div
-          className={`h-[3rem] bg-orange-500 w-[4rem] rounded-xl ml-3 mr-2 overflow-hidden`}
+          className={`h-[3rem] bg-primary w-[4rem] rounded-xl ml-3 mr-2 overflow-hidden`}
         >
+          <div
+            className={`${
+              isProfileImageLoaded && "hidden"
+            } h-full w-full flex items-center justify-center`}
+          >
+            <OvalSpinner width="25" height="25" color="#282828"/>
+          </div>
           <img
+            onLoad={() => setIsProfileImageLoaded(true)}
             src={profile_image}
-            loading="lazy"
-            className="object-cover object-center h-full w-full"
+            className={`object-cover object-center h-full w-full ${
+              !isProfileImageLoaded && "hidden"
+            }`}
+            // loading="lazy"
           />
         </div>
         <div className="text-gray-200">

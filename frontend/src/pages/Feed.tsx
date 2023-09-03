@@ -8,7 +8,7 @@ import CustomModal from "../Components/CustomModal";
 import TagIcon from "@mui/icons-material/Tag";
 import { PostType } from "../types/api";
 import { useMutation, useQueryClient } from "react-query";
-import Spinner from "../Components/Spinner";
+import Spinner, { OvalSpinner } from "../Components/Spinner";
 import { motion as m, AnimatePresence } from "framer-motion";
 
 type FeedProps = {
@@ -23,6 +23,7 @@ const Feed = ({ feed, isfetchingFeed }: FeedProps) => {
   const imageRef = useRef<HTMLInputElement>(null);
   const [imageInput, setImageInput] = useState<File | null>(null);
   const [showNewPost, setShowNewPost] = useState(false);
+  const [isProfileImageLoaded, setIsProfileImageLoaded] = useState(false);
 
   const toggleNewPost = () => {
     setShowNewPost(!showNewPost);
@@ -93,9 +94,19 @@ const Feed = ({ feed, isfetchingFeed }: FeedProps) => {
 
       <div className="w-full p-5 bg-secondary rounded-xl flex flex-row justify-between items-center">
         <div className="h-[3rem] w-[3rem] mr-2   lg:w-[4rem] bg-gray-500 rounded-xl overflow-hidden">
+          <div
+            className={`${
+              isProfileImageLoaded && "hidden"
+            } h-full w-full flex items-center justify-center`}
+          >
+            <OvalSpinner width="25" height="25" />
+          </div>
           <img
             src={profileInfo?.profile_image}
-            className="h-full w-full object-cover"
+            onLoad={() => setIsProfileImageLoaded(true)}
+            className={`h-full w-full object-cover ${
+              !isProfileImageLoaded && "hidden"
+            }`}
           />
         </div>
         <span

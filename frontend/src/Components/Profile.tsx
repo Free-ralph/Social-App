@@ -21,7 +21,7 @@ import HiddenImage from "./HiddenImage";
 import NewspaperOutlinedIcon from "@mui/icons-material/NewspaperOutlined";
 import CameraEnhanceIcon from "@mui/icons-material/CameraEnhance";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
-import Spinner from "./Spinner";
+import Spinner, { OvalSpinner } from "./Spinner";
 import { FadeVariant } from "./AnimationVariants";
 import { ProfileType } from "../types/api";
 import Button from "./Button";
@@ -48,6 +48,8 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
   const axiosPrivate = useAxiosPrivate();
   const coverImageRef = useRef<HTMLInputElement>(null);
   const profileImageRef = useRef<HTMLInputElement>(null);
+  const [isCoverImageLoaded, setIsCoverImageLoaded] = useState(false);
+  const [isProfileImageLoaded, setIsProfileImageLoaded] = useState(false);
   const navSectionItems = [
     {
       name: "timeline",
@@ -219,12 +221,11 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
             }
             className="w-full h-[3rem] mt-4 p-2 border-1 text-gray-200 bg-transparent rounded-lg focus:shadow-purple-500 focus:border-purple-500 focus:ring-purple-500"
           />
-          <button disabled = {isProfileUpdating} className="rounded-xl w-[5rem] h-[2.5rem] mt-3 bg-alternate text-gray-300 border-2 border-alternate hover:bg-transparent  text-sm  font-bold transition-all delay-[10] flex items-center justify-center">
-            {isProfileUpdating ? (
-              <Spinner width="30" height="30" />
-            ) : (
-              "update"
-            )}
+          <button
+            disabled={isProfileUpdating}
+            className="rounded-xl w-[5rem] h-[2.5rem] mt-3 bg-alternate text-gray-300 border-2 border-alternate hover:bg-transparent  text-sm  font-bold transition-all delay-[10] flex items-center justify-center"
+          >
+            {isProfileUpdating ? <Spinner width="30" height="30" /> : "update"}
           </button>
         </form>
       </CustomModal>
@@ -241,15 +242,22 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
             handleChange={handleProfileImageChange}
           />
         </>
+
         <div className="relative bg-secondary h-full overflow-hidden">
-          {isCoverImageLoading ? (
-            <div className="w-full flex justify-center items-center h-full">
-              <Spinner />
-            </div>
-          ) : profile?.cover_image ? (
+          <div
+            className={`${
+              !isCoverImageLoading && isCoverImageLoaded && "hidden"
+            } h-full w-full flex items-center justify-center`}
+          >
+            <OvalSpinner width="35" height="35" />
+          </div>
+          {profile.cover_image ? (
             <img
+              onLoad={() => setIsCoverImageLoaded(true)}
               src={profile?.cover_image}
-              className="w-full object-center object-cover h-full"
+              className={`${
+                (isCoverImageLoading || !isCoverImageLoaded) && "hidden"
+              } w-full object-center object-cover h-full`}
             />
           ) : (
             <div className="font-bold mt-5 text-3xl text-center">
@@ -280,16 +288,18 @@ const Profile = ({ profile, isMobile = false }: ProfileTypes) => {
         </div>
         <div className="absolute right-0 lg:right-[unset] left-0 m-auto bottom-0 lg:left-[11.5rem] rounded-xl translate-y-[1.5rem] w-fit scale-[1.2] lg:scale-[1.5] overflow-hidden border-1 border-primary bg-secondary z-10">
           <div className="relative w-[7rem] h-[7rem] ">
-            {isProfileImageLoading ? (
-              <div className="w-full flex justify-center items-center h-full">
-                <Spinner />
-              </div>
-            ) : (
-              <img
-                src={profile.profile_image}
-                className="w-full h-full object-center object-cover"
-              />
-            )}
+            <div
+              className={`${
+                (!isProfileImageLoading && isProfileImageLoaded) && "hidden"
+              } w-full flex justify-center items-center h-full`}
+            >
+              <OvalSpinner width="25" height="25" />
+            </div>
+            <img
+              src={profile.profile_image}
+              onLoad={() => setIsProfileImageLoaded(true)}
+              className={`w-full h-full object-center object-cover ${(isProfileImageLoading || !isProfileImageLoaded) && "hidden"}`}
+            />
             {isMobile ? (
               <span
                 className="absolute bottom-2 right-2 text-primary"
@@ -398,7 +408,7 @@ type PostFeedSectionProps = {
 };
 
 const PostFeedSection = ({ profile }: PostFeedSectionProps) => {
-  const { profileInfo } = useStateContext()
+  const { profileInfo } = useStateContext();
   return (
     <div className="w-full">
       {profile.posts.map((item, i) => {

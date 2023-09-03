@@ -4,7 +4,8 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useStateContext } from "../context/StateContextProvider";
 import { authorType } from "../types/api";
 import { useMutation, useQueryClient } from "react-query";
-import Spinner from "./Spinner";
+import Spinner, { OvalSpinner } from "./Spinner";
+import { useState } from "react";
 
 type FollowCardProps = {
   follower: boolean;
@@ -25,6 +26,7 @@ const FollowCard = ({
   const queryClient = useQueryClient();
   const { handleSnackMessage, profileInfo } = useStateContext();
   const axiosPrivate = useAxiosPrivate();
+  const [isProfileImageLoaded, setIsProfileImageLoaded] = useState(false);
 
   const { mutate: unFollow, isLoading: isUnFollowing } = useMutation({
     mutationFn: () => axiosPrivate.get(`social/unfollow/${id}`),
@@ -55,10 +57,20 @@ const FollowCard = ({
     <div className=" bg-secondary rounded p-1 items-center">
       <div className="flex flex-row border-2 border-alternate p-2 rounded-xl justify-between items-center">
         <div className="flex">
-          <div className="h-[3rem] bg-orange-500 w-[4rem] rounded-xl ml-3 mr-2 overflow-hidden">
+          <div className="h-[3rem] bg-primary w-[4rem] rounded-xl ml-3 mr-2 overflow-hidden">
+            <div
+              className={`${
+                isProfileImageLoaded && "hidden"
+              } h-full w-full flex items-center justify-center`}
+            >
+              <OvalSpinner width="25" height="25" color="#282828" />
+            </div>
             <img
+              onLoad={() => setIsProfileImageLoaded(true)}
               src={profile_image}
-              className="h-full w-full object-cover object-center"
+              className={`h-full w-full object-cover object-center ${
+                !isProfileImageLoaded && "hidden"
+              }`}
             />
           </div>
           <div className="text-gray-200 flex flex-col">
